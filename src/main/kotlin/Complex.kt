@@ -1,13 +1,64 @@
 class Complex(
-    val real: Int,
-    val imaginary: Int
+  val real: Double,
+  val imaginary: Double
 ) {
+
+  constructor(real: Int, imaginary: Int) : this(
+    real.toDouble(),
+    imaginary.toDouble()
+  )
+
   operator fun plus(complex: Complex): Complex {
-    return Complex(this.real + complex.real, this.imaginary + complex.imaginary)
+    return Complex(Re(this) + Re(complex), Im(this) + Im(complex))
+  }
+
+  operator fun plus(real: Double): Complex {
+    return Complex(this.real + real, this.imaginary)
   }
 
   operator fun plus(real: Int): Complex {
-    return Complex(this.real + real, this.imaginary)
+    return plus(real.toDouble())
+  }
+
+  operator fun minus(complex: Complex): Complex {
+    return this + -complex
+  }
+
+
+  operator fun minus(real: Double): Complex {
+    return this + -real
+  }
+
+  operator fun minus(real: Int): Complex {
+    return minus(real.toDouble())
+  }
+
+  operator fun unaryMinus(): Complex {
+    return -Re(this) + -Im(this) * i
+  }
+
+  operator fun times(other: Complex): Complex {
+    val a = Re(this)
+    val b = Im(this)
+    val c = Re(other)
+    val d = Im(other)
+
+    return Complex(
+      a * c - b * d,
+      b * c + a * d
+    )
+  }
+
+  operator fun times(real: Double): Complex {
+    return this * (Complex(real, 0.0))
+  }
+
+  operator fun times(real: Int): Complex {
+    return this * (Complex(real.toDouble(), 0.0))
+  }
+
+  fun conjugate(): Any {
+    return Re(this) - Im(this) * i
   }
 
   override fun equals(other: Any?): Boolean {
@@ -16,15 +67,12 @@ class Complex(
 
     other as Complex
 
-    if (real != other.real) return false
-    if (imaginary != other.imaginary) return false
-
-    return true
+    return Re(this) == Re(other) && Im(this) == Im(other)
   }
 
   override fun hashCode(): Int {
-    var result = real
-    result += 31 * result + imaginary
+    var result = real.hashCode()
+    result += 31 * result + imaginary.hashCode()
     return result
   }
 
@@ -32,33 +80,14 @@ class Complex(
     return "($real ${imaginary}i)"
   }
 
-  operator fun minus(real: Int): Complex {
-    return this + -real
-  }
-
-  operator fun minus(complex: Complex): Complex {
-    return this + -complex
-  }
-
-  operator fun unaryMinus(): Complex {
-    return Complex(-real, -imaginary)
-  }
-
-  operator fun times(complex: Complex): Complex {
-    val a = real
-    val b = imaginary
-    val c = complex.real
-    val d = complex.imaginary
-
+  fun div(other: Complex): Complex {
+    val a = Re(this)
+    val b = Im(this)
+    val c = Re(other)
+    val d = Im(other)
     return Complex(
-        a * c - b * d,
-        b * c + a * d
+      (a * c + b * d) / (c * c + d * d),
+      (b * c - a * d) / (c * c + d * d)
     )
   }
-
-  operator fun times(real: Int): Complex {
-    return this * (Complex(real, 0))
-  }
-
-
 }
